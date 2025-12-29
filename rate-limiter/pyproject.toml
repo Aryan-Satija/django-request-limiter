@@ -1,0 +1,5 @@
+[project]
+name = "django-rate-limiter"
+version = "0.1.0"
+description = "Plug-and-play rate limiter for Django"
+dependencies = ["Django>=3.2"]

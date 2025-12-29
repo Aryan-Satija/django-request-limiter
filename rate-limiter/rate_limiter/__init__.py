@@ -1,0 +1,1 @@
+default_app_config = 'rate_limiter.apps.RateLimiterConfig'
