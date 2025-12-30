@@ -10,6 +10,7 @@ rate_limiter/conf.py
 rate_limiter/exceptions.py
 rate_limiter/middleware.py
 rate_limiter/algorithms/__init__.py
+rate_limiter/algorithms/composite_rate_limiter.py
 rate_limiter/algorithms/leaky_bucket_rate_limiter.py
 rate_limiter/algorithms/simple_rate_limiter.py
 rate_limiter/algorithms/token_bucket_rate_limiter.py

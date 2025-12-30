@@ -38,3 +38,24 @@ class InvalidAlgorithmError(RateLimiterConfigurationError):
 
     def __init__(self, passed_algorithm_name: str):
         super().__init__(f'Invalid algorithm name passed: {passed_algorithm_name}')
+
+
+class RateLimiterRuntimeError(Exception):
+    """
+    Errors that occur while processing a request.
+    """
+    pass
+
+
+class PolicyResolutionError(RateLimiterRuntimeError):
+    """
+    Raised when policy_resolver:
+    - raises an exception
+    - returns an invalid type
+    """
+    pass
+
+
+class UnknownPolicyError(RateLimiterRuntimeError):
+    def __init__(self, policy_name: str):
+        super().__init__(f"Unknown policy '{policy_name}'")

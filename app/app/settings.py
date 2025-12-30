@@ -112,9 +112,20 @@ USE_I18N = True
 USE_TZ = True
 
 RATE_LIMITER_CONFIGURATION = {
-    'bucket_size': 5, 
-    'refill_rate': 1,
-    'algorithm': 'simple'
+    'policies': {
+        'free': {
+            'algorithm': 'simple',
+            'window': 300,
+            'threshold': 5
+        }, 
+        'paid': {
+            'algorithm': 'token-bucket',
+            'bucket_size': 5,
+            'refill_rate': 0.2
+        }
+    }, 
+    'policy_resolver': lambda request: request.GET.get('plan', 'free'),
+    'algorithm': 'composite'
 }
 
 # Static files (CSS, JavaScript, Images)
