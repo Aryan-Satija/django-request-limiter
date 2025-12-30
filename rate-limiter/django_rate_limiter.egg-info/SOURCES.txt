@@ -8,12 +8,13 @@ rate_limiter/__init__.py
 rate_limiter/apps.py
 rate_limiter/conf.py
 rate_limiter/exceptions.py
+rate_limiter/middleware.py
+rate_limiter/algorithms/__init__.py
+rate_limiter/algorithms/leaky_bucket_rate_limiter.py
+rate_limiter/algorithms/simple_rate_limiter.py
+rate_limiter/algorithms/token_bucket_rate_limiter.py
 rate_limiter/backend/__init__.py
 rate_limiter/backend/base.py
 rate_limiter/backend/leaky_bucket_cache.py
 rate_limiter/backend/simple_cache.py
 rate_limiter/backend/token_bucket_cache.py
-rate_limiter/middleware/__init__.py
-rate_limiter/middleware/leaky_bucket_rate_limiter.py
-rate_limiter/middleware/simple_rate_limiter.py
-rate_limiter/middleware/token_bucket_rate_limiter.py

@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'rate_limiter.middleware.leaky_bucket_rate_limiter.RateLimiterMiddleware',
+    'rate_limiter.middleware.RateLimiterMiddleWare',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -112,9 +112,9 @@ USE_I18N = True
 USE_TZ = True
 
 RATE_LIMITER_CONFIGURATION = {
-    'capacity': 5, 
-    'leak_rate': 1,
-    'algorithm': 'leaky-bucket-rate-limiter'
+    'bucket_size': 5, 
+    'refill_rate': 1,
+    'algorithm': 'simple'
 }
 
 # Static files (CSS, JavaScript, Images)

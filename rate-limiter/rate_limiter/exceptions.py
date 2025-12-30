@@ -1,7 +1,11 @@
 from typing import Sequence
 
 
-class MissingParameterError(ValueError):
+class RateLimiterConfigurationError(Exception):
+    pass
+
+
+class MissingParameterError(RateLimiterConfigurationError):
     """Raised when required parameters for an algorithm are missing."""
 
     def __init__(
@@ -21,3 +25,16 @@ class MissingParameterError(ValueError):
         )
 
         super().__init__(message)
+
+
+class MissingAlgorithmError(RateLimiterConfigurationError):
+    """Raised when the algorithm itself is missing"""
+
+    pass
+
+
+class InvalidAlgorithmError(RateLimiterConfigurationError):
+    """Raised when the algorithm name is invalid"""
+
+    def __init__(self, passed_algorithm_name: str):
+        super().__init__(f'Invalid algorithm name passed: {passed_algorithm_name}')

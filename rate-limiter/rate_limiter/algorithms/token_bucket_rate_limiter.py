@@ -1,22 +1,22 @@
-from django.http import HttpRequest, JsonResponse
 from rate_limiter.conf import rl_settings
-from rate_limiter.backend.simple_cache import CacheBackend
 from rate_limiter.exceptions import MissingParameterError
+from rate_limiter.backend.token_bucket_cache import TokenBucketCacheBackend
+from django.http import JsonResponse
 
 
-class RateLimiterMiddleware:
+class TokenBucketRateLimiter:
 
     def __init__(self, get_response):
         self.next_chain_middleware = get_response
 
         algorithm = rl_settings.algorithm
-        window = rl_settings.window
-        threshold = rl_settings.threshold
+        bucket_size = rl_settings.bucket_size
+        refill_rate = rl_settings.refill_rate
 
         required_params = {
             "algorithm": algorithm,
-            "window": window,
-            "threshold": threshold,
+            "bucket_size": bucket_size,
+            "refill_rate": refill_rate,
         }
 
         missing_params = [name for name, value in required_params.items() if value is None]
@@ -29,10 +29,10 @@ class RateLimiterMiddleware:
                 missing_params=missing_params,
             )
 
-        self.backend = CacheBackend(window=window, threshold=threshold)
+        self.backend = TokenBucketCacheBackend(bucket_size, refill_rate)
 
 
-    def __call__(self, request: HttpRequest):
+    def __call__(self, request):
         ip_address = request.META.get("REMOTE_ADDR")
         key = f"fl:{ip_address}:{request.path}"
 
