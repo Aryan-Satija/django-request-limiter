@@ -59,3 +59,15 @@ class PolicyResolutionError(RateLimiterRuntimeError):
 class UnknownPolicyError(RateLimiterRuntimeError):
     def __init__(self, policy_name: str):
         super().__init__(f"Unknown policy '{policy_name}'")
+        
+
+class KeyBuilderConfigurationError(Exception):
+    pass
+
+
+class MissingKeyBuilderError(KeyBuilderConfigurationError):
+    pass
+
+
+class InvalidKeyBuilder(KeyBuilderConfigurationError):
+    pass

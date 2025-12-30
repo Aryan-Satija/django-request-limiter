@@ -1,8 +1,8 @@
 from django.http import HttpRequest, JsonResponse
 from rate_limiter.conf import rl_settings
 from rate_limiter.backend.simple_cache import CacheBackend
-from rate_limiter.exceptions import MissingParameterError
-
+from rate_limiter.exceptions import MissingParameterError, MissingKeyBuilderError, InvalidKeyBuilder
+from rate_limiter.key_builder.base import KeyBuilder
 
 class SimpleRateLimiter:
 
@@ -30,11 +30,16 @@ class SimpleRateLimiter:
             )
 
         self.backend = CacheBackend(window=window, threshold=threshold)
-
+        
+        key_builder = rl_settings.key_builder
+        if not key_builder:
+            raise MissingKeyBuilderError('Key builder must be passed')
+        if not isinstance(key_builder, KeyBuilder):
+            raise InvalidKeyBuilder('key builder must be an instance of key builder')
+        self.key_builder = key_builder
 
     def __call__(self, request: HttpRequest):
-        ip_address = request.META.get("REMOTE_ADDR")
-        key = f"fl:{ip_address}:{request.path}"
+        key = self.key_builder.build(request)
 
         allow = self.backend.allow(key)
         if not allow:
