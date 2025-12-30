@@ -1,7 +1,7 @@
 import inspect
 from django.core.exceptions import ImproperlyConfigured
 from django.http import JsonResponse
-
+from rate_limiter.algorithm_registry import ALGORITHM_REGISTRY
 from rate_limiter.conf import rl_settings
 from rate_limiter.exceptions import (
     MissingAlgorithmError,
@@ -10,29 +10,6 @@ from rate_limiter.exceptions import (
     UnknownPolicyError,
     PolicyResolutionError,
 )
-from rate_limiter.backend.simple_cache import CacheBackend
-from rate_limiter.backend.leaky_bucket_cache import LeakyBucketBackend
-from rate_limiter.backend.token_bucket_cache import TokenBucketCacheBackend
-
-
-# ---------------------------------------
-# Algorithm registry
-# ---------------------------------------
-
-ALGORITHM_REGISTRY = {
-    "simple": {
-        "backend": CacheBackend,
-        "required_params": {"window", "threshold"},
-    },
-    "token-bucket": {
-        "backend": TokenBucketCacheBackend,
-        "required_params": {"bucket_size", "refill_rate"},
-    },
-    "leaky-bucket": {
-        "backend": LeakyBucketBackend,
-        "required_params": {"capacity", "leak_rate"},
-    },
-}
 
 
 class CompositeRateLimiter:
