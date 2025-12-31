@@ -1,5 +1,11 @@
 from rate_limiter.conf import rl_settings
-from rate_limiter.exceptions import MissingParameterError, MissingKeyBuilderError, InvalidKeyBuilder, MissingCacheBackendError, InvalidCacheBackendError
+from rate_limiter.exceptions import (
+    MissingParameterError,
+    MissingKeyBuilderError,
+    InvalidKeyBuilder,
+    MissingCacheBackendError,
+    InvalidCacheBackendError,
+)
 from rate_limiter.backend.token_bucket_cache import TokenBucketCacheBackend
 from rate_limiter.backend.redis_token_bucket_cache import RedisTokenBucketCacheBackend
 from rate_limiter.key_builder.base import KeyBuilder
@@ -21,8 +27,12 @@ class TokenBucketRateLimiter:
             "refill_rate": refill_rate,
         }
 
-        missing_params = [name for name, value in required_params.items() if value is None]
-        provided_params = [name for name, value in required_params.items() if value is not None]
+        missing_params = [
+            name for name, value in required_params.items() if value is None
+        ]
+        provided_params = [
+            name for name, value in required_params.items() if value is not None
+        ]
 
         if missing_params:
             raise MissingParameterError(
@@ -39,17 +49,22 @@ class TokenBucketRateLimiter:
 
         self.backend = (
             RedisTokenBucketCacheBackend(
-                bucket_size=bucket_size, refill_rate=refill_rate, cache_alias=backend["cache_alias"]
+                bucket_size=bucket_size,
+                refill_rate=refill_rate,
+                cache_alias=backend["cache_alias"],
             )
             if backend["cache"] == "redis"
-            else TokenBucketCacheBackend(bucket_size=bucket_size, refill_rate=refill_rate,)
+            else TokenBucketCacheBackend(
+                bucket_size=bucket_size,
+                refill_rate=refill_rate,
+            )
         )
 
         key_builder = rl_settings.key_builder
         if not key_builder:
-            raise MissingKeyBuilderError('Key builder must be passed')
+            raise MissingKeyBuilderError("Key builder must be passed")
         if not isinstance(key_builder, KeyBuilder):
-            raise InvalidKeyBuilder('key builder must be an instance of key builder')
+            raise InvalidKeyBuilder("key builder must be an instance of key builder")
         self.key_builder = key_builder
 
     def __call__(self, request):
