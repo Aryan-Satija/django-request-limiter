@@ -3,6 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import JsonResponse
 from rate_limiter.algorithm_registry import ALGORITHM_REGISTRY
 from rate_limiter.conf import rl_settings
+from rate_limiter.key_builder.recipes import IpPathKeyBuilder
 from rate_limiter.exceptions import (
     MissingAlgorithmError,
     InvalidAlgorithmError,
@@ -78,6 +79,11 @@ class CompositeRateLimiter:
             )
             for name, policy in policies.items()
         }
+        
+        self.key_builders = {
+            name: (policy['key_builder'] if 'key_builder' in policy else IpPathKeyBuilder())
+            for name, policy in policies.items()
+        }
 
     def __call__(self, request):
         try:
@@ -97,8 +103,7 @@ class CompositeRateLimiter:
 
         backend = self.backends[policy_name]
 
-        ip = request.META.get("REMOTE_ADDR", "unknown")
-        key = f"rl:{policy_name}:{ip}:{request.path}"
+        key = self.key_builders[policy_name].build(request)
 
         allow = backend.allow(key)
 

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from rate_limiter.key_builder.schema import SchemaKeyBuilder
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -126,7 +127,8 @@ RATE_LIMITER_CONFIGURATION = {
         'free': {
             'algorithm': 'simple',
             'window': 300,
-            'threshold': 5
+            'threshold': 5,
+            'key_builder': SchemaKeyBuilder(ip=True)
         }, 
         'paid': {
             'algorithm': 'token-bucket',

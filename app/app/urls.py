@@ -23,5 +23,9 @@ urlpatterns = [
     path('greet/', lambda request: JsonResponse({
         'message': f'Hello, {request.META.get("REMOTE_ADDR")}',
         'status': 200,
-    }, status=200))
+    }, status=200)),
+    path('hello/',lambda request: JsonResponse({
+        'message': f'Hello, {request.META.get("REMOTE_ADDR")}',
+        'status': 200,
+    }))
 ]
