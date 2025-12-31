@@ -37,13 +37,14 @@ class InvalidAlgorithmError(RateLimiterConfigurationError):
     """Raised when the algorithm name is invalid"""
 
     def __init__(self, passed_algorithm_name: str):
-        super().__init__(f'Invalid algorithm name passed: {passed_algorithm_name}')
+        super().__init__(f"Invalid algorithm name passed: {passed_algorithm_name}")
 
 
 class RateLimiterRuntimeError(Exception):
     """
     Errors that occur while processing a request.
     """
+
     pass
 
 
@@ -53,13 +54,14 @@ class PolicyResolutionError(RateLimiterRuntimeError):
     - raises an exception
     - returns an invalid type
     """
+
     pass
 
 
 class UnknownPolicyError(RateLimiterRuntimeError):
     def __init__(self, policy_name: str):
         super().__init__(f"Unknown policy '{policy_name}'")
-        
+
 
 class KeyBuilderConfigurationError(Exception):
     pass
@@ -70,4 +72,16 @@ class MissingKeyBuilderError(KeyBuilderConfigurationError):
 
 
 class InvalidKeyBuilder(KeyBuilderConfigurationError):
+    pass
+
+
+class CacheBackendConfigurationError(Exception):
+    pass
+
+
+class MissingCacheBackendError(CacheBackendConfigurationError):
+    pass
+
+
+class InvalidCacheBackendError(CacheBackendConfigurationError):
     pass

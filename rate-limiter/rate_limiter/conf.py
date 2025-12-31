@@ -5,7 +5,11 @@ DEFAULT_CONFIGURATION = {
     "window": 60,
     "threshold": 100,
     "algorithm": "simple-rate-limiter",
-    "key_builder": IpPathKeyBuilder()
+    "key_builder": IpPathKeyBuilder(),
+    "backend": {
+        "cache": "django-default",
+        "cache_alias": "default"
+    }
 }
 
 USER_SETTINGS = getattr(settings, "RATE_LIMITER_CONFIGURATION", {})
