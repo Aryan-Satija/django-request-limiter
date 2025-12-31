@@ -1,6 +1,13 @@
 from rate_limiter.conf import rl_settings
-from rate_limiter.exceptions import MissingParameterError, MissingKeyBuilderError, InvalidKeyBuilder
+from rate_limiter.exceptions import (
+    MissingParameterError,
+    MissingKeyBuilderError,
+    InvalidKeyBuilder,
+    MissingCacheBackendError,
+    InvalidCacheBackendError,
+)
 from rate_limiter.backend.leaky_bucket_cache import LeakyBucketBackend
+from rate_limiter.backend.redis_leaky_bucket_cache import RedisLeakyBucketCacheBackend
 from rate_limiter.key_builder.base import KeyBuilder
 from django.http import JsonResponse
 
@@ -20,8 +27,12 @@ class LeakyBucketRateLimiter:
             "leak_rate": leak_rate,
         }
 
-        missing_params = [name for name, value in required_params.items() if value is None]
-        provided_params = [name for name, value in required_params.items() if value is not None]
+        missing_params = [
+            name for name, value in required_params.items() if value is None
+        ]
+        provided_params = [
+            name for name, value in required_params.items() if value is not None
+        ]
 
         if missing_params:
             raise MissingParameterError(
@@ -30,12 +41,30 @@ class LeakyBucketRateLimiter:
                 missing_params=missing_params,
             )
 
-        self.backend = LeakyBucketBackend(capacity, leak_rate)
+        backend = rl_settings.backend
+        if not backend:
+            raise MissingCacheBackendError("Cache backend must be provided")
+        if ("cache" not in backend) or ("cache_alias" not in backend):
+            raise InvalidCacheBackendError("cache and cache_alias must be provided")
+
+        self.backend = (
+            RedisLeakyBucketCacheBackend(
+                capacity=capacity,
+                leak_rate=leak_rate,
+                cache_alias=backend["cache_alias"],
+            )
+            if backend["cache"] == "redis"
+            else LeakyBucketBackend(
+                capacity=capacity,
+                leak_rate=leak_rate,
+            )
+        )
+
         key_builder = rl_settings.key_builder
         if not key_builder:
-            raise MissingKeyBuilderError('Key builder must be passed')
+            raise MissingKeyBuilderError("Key builder must be passed")
         if not isinstance(key_builder, KeyBuilder):
-            raise InvalidKeyBuilder('key builder must be an instance of key builder')
+            raise InvalidKeyBuilder("key builder must be an instance of key builder")
         self.key_builder = key_builder
 
     def __call__(self, request):
