@@ -19,6 +19,7 @@ rate_limiter/backend/__init__.py
 rate_limiter/backend/base.py
 rate_limiter/backend/leaky_bucket_cache.py
 rate_limiter/backend/redis_simple_cache.py
+rate_limiter/backend/redis_token_bucket_cache.py
 rate_limiter/backend/simple_cache.py
 rate_limiter/backend/token_bucket_cache.py
 rate_limiter/key_builder/base.py

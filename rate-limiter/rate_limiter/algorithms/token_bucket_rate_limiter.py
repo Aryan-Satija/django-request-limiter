@@ -1,6 +1,7 @@
 from rate_limiter.conf import rl_settings
-from rate_limiter.exceptions import MissingParameterError, MissingKeyBuilderError, InvalidKeyBuilder
+from rate_limiter.exceptions import MissingParameterError, MissingKeyBuilderError, InvalidKeyBuilder, MissingCacheBackendError, InvalidCacheBackendError
 from rate_limiter.backend.token_bucket_cache import TokenBucketCacheBackend
+from rate_limiter.backend.redis_token_bucket_cache import RedisTokenBucketCacheBackend
 from rate_limiter.key_builder.base import KeyBuilder
 from django.http import JsonResponse
 
@@ -30,7 +31,19 @@ class TokenBucketRateLimiter:
                 missing_params=missing_params,
             )
 
-        self.backend = TokenBucketCacheBackend(bucket_size, refill_rate)
+        backend = rl_settings.backend
+        if not backend:
+            raise MissingCacheBackendError("Cache backend must be provided")
+        if ("cache" not in backend) or ("cache_alias" not in backend):
+            raise InvalidCacheBackendError("cache and cache_alias must be provided")
+
+        self.backend = (
+            RedisTokenBucketCacheBackend(
+                bucket_size=bucket_size, refill_rate=refill_rate, cache_alias=backend["cache_alias"]
+            )
+            if backend["cache"] == "redis"
+            else TokenBucketCacheBackend(bucket_size=bucket_size, refill_rate=refill_rate,)
+        )
 
         key_builder = rl_settings.key_builder
         if not key_builder:
